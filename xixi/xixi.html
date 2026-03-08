@@ -30,18 +30,71 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 15% 20%, rgba(120,60,200,0.28) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 85% 70%, rgba(200,80,160,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(60,100,200,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at 70% 30%, rgba(253,180,100,0.08) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 15% 20%, rgba(120,60,200,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 85% 70%, rgba(200,80,160,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(60,100,200,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 70% 30%, rgba(253,180,100,0.06) 0%, transparent 60%);
   animation: auroraPulse 12s ease-in-out infinite alternate;
   pointer-events: none;
 }
 @keyframes auroraPulse {
-  0%   { opacity: 0.6; transform: scale(1) translate(0,0); }
-  33%  { opacity: 0.9; transform: scale(1.04) translate(1%,2%); }
-  66%  { opacity: 0.7; transform: scale(0.97) translate(-1%,1%); }
-  100% { opacity: 0.85; transform: scale(1.06) translate(2%,-2%); }
+  0%   { opacity: 0.5; transform: scale(1) translate(0,0); }
+  33%  { opacity: 0.8; transform: scale(1.04) translate(1%,2%); }
+  66%  { opacity: 0.6; transform: scale(0.97) translate(-1%,1%); }
+  100% { opacity: 0.75; transform: scale(1.06) translate(2%,-2%); }
+}
+
+/* ============================
+   STARRY BACKDROP
+   ============================ */
+#stars { position:fixed; inset:0; z-index:1; pointer-events:none; }
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: starTwinkle 3s ease-in-out infinite;
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Shooting Stars */
+.shooting-star {
+  position: fixed;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 10%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255,255,255,0.6), 0 0 12px 3px rgba(255,255,255,0.3);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: left center;
+  --shoot-angle: -45deg;
+}
+
+/* Natural shooting star animation - moves along its rotation */
+@keyframes shootingStar {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--shoot-angle)) translateX(0) scaleX(0.5);
+  }
+  5% {
+    opacity: 1;
+    transform: rotate(var(--shoot-angle)) translateX(20px) scaleX(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: rotate(var(--shoot-angle)) translateX(80px) scaleX(1);
+  }
+  80% {
+    opacity: 0.8;
+    transform: rotate(var(--shoot-angle)) translateX(450px) scaleX(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--shoot-angle)) translateX(600px) scaleX(0.4);
+  }
 }
 
 /* ============================
@@ -510,6 +563,7 @@ body.gate-locked {
   padding: 28px 24px;
   background: rgba(11,7,20,0.92);
   box-shadow: 0 22px 60px rgba(0,0,0,0.55), inset 0 0 30px rgba(196,150,255,0.08);
+  position: relative;
 }
 .pg-screen {
   display: none;
@@ -564,6 +618,10 @@ body.gate-locked {
   gap: 10px;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+  min-height: 80px;
+  align-items: center;
+  padding-bottom: 70px;
 }
 .pg-btn {
   border: 1px solid rgba(253,230,138,0.45);
@@ -578,10 +636,40 @@ body.gate-locked {
   cursor: pointer;
   transition: opacity 0.3s ease;
 }
+.pg-btn.hint-glow {
+  animation: hintGlow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(253,230,138,0.5);
+}
+@keyframes hintGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(253,230,138,0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 35px rgba(253,230,138,0.8), inset 0 0 20px rgba(253,230,138,0.2);
+    transform: scale(1.05);
+  }
+}
 .pg-btn.alt {
   border-color: rgba(196,150,255,0.45);
   color: rgba(220,198,255,0.95);
   background: rgba(196,150,255,0.1);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.pg-btn.fleeing {
+  transition: all 0.15s ease-out !important;
+  pointer-events: none;
+}
+.pg-btn.caught {
+  animation: caughtShake 0.5s ease;
+}
+@keyframes caughtShake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-8px) rotate(-5deg); }
+  40% { transform: translateX(8px) rotate(5deg); }
+  60% { transform: translateX(-5px) rotate(-3deg); }
+  80% { transform: translateX(5px) rotate(3deg); }
 }
 .pg-note {
   min-height: 20px;
@@ -725,9 +813,44 @@ body.gate-locked {
   opacity: 1;
 }
 .pg-tease-line {
-  font-weight: 400;
-  text-shadow: 0 0 20px rgba(200, 150, 255, 0.3);
-  padding: 0 30px;
+  position: absolute;
+  top: 100%;
+  margin-top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(13px, 3.2vw, 16px);
+  font-weight: 500;
+  font-style: italic;
+  color: #fde68a;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 90%;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  text-shadow: 
+    0 0 25px rgba(253,230,138,0.9),
+    0 0 40px rgba(253,230,138,0.6),
+    0 0 60px rgba(253,230,138,0.3);
+  pointer-events: none;
+  animation: textGlowPulse 2s ease-in-out infinite;
+  white-space: nowrap;
+}
+@keyframes textGlowPulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 25px rgba(253,230,138,0.9),
+      0 0 40px rgba(253,230,138,0.6),
+      0 0 60px rgba(253,230,138,0.3);
+  }
+  50% {
+    text-shadow: 
+      0 0 35px rgba(253,230,138,1),
+      0 0 55px rgba(253,230,138,0.8),
+      0 0 80px rgba(253,230,138,0.5);
+  }
 }
 .sparkle {
   position: fixed;
@@ -863,6 +986,12 @@ body.gate-locked {
   .pg-card { width: 94vw; padding: 22px 16px; }
   .pg-btn { min-height: 44px; padding: 11px 16px; }
   .pg-code-input { width: 66px; height: 54px; font-size: 24px; }
+  .pg-tease-line {
+    font-size: clamp(12px, 3.5vw, 14px);
+    margin-top: 15px;
+    white-space: normal;
+    max-width: 95%;
+  }
   /* Reduce animation intensity on mobile */
   .heart { animation-duration: 5s !important; }
   @keyframes auroraPulse {
@@ -889,6 +1018,7 @@ body.gate-locked {
 <!-- HEARTS CONTAINER -->
 <div id="hearts-container" style="position:fixed;inset:0;pointer-events:none;z-index:4;"></div>
 
+<div id="stars"></div>
 <canvas id="gc"></canvas>
 <div id="pw"></div>
 
@@ -1003,6 +1133,126 @@ body.gate-locked {
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 const isTouch = 'ontouchstart' in window;
 
+/* ── STARRY BACKDROP ── */
+const starsContainer = document.getElementById('stars');
+
+// Create static stars
+function createStars() {
+  const starCount = isMobile ? 100 : 200;
+  for(let i=0; i<starCount; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (2 + Math.random() * 3) + 's';
+    
+    // Add some brighter/larger stars
+    if(Math.random() < 0.15) {
+      star.style.width = (2.5 + Math.random() * 1.5) + 'px';
+      star.style.height = (2.5 + Math.random() * 1.5) + 'px';
+      star.style.boxShadow = '0 0 4px 1px rgba(255,255,255,0.8)';
+    }
+    
+    starsContainer.appendChild(star);
+  }
+}
+createStars();
+
+// Create shooting stars
+function createShootingStar() {
+  const star = document.createElement('div');
+  star.className = 'shooting-star';
+  
+  // Cinematic bias: mostly top-right to bottom-left, occasional opposite streaks
+  const direction = Math.random();
+  let startX, startY, angle;
+  
+  if (direction < 0.75) {
+    // Primary flow: top-right to bottom-left
+    startX = 70 + Math.random() * 30;
+    startY = Math.random() * 20;
+    angle = -38 - Math.random() * 16; // -38 to -54 degrees
+  } else if (direction < 0.9) {
+    // Secondary flow: right side down-left
+    startX = 85 + Math.random() * 15;
+    startY = 10 + Math.random() * 30;
+    angle = -42 - Math.random() * 14; // -42 to -56 degrees
+  } else if (direction < 0.97) {
+    // Rare opposite streak: top-left to bottom-right
+    startX = Math.random() * 20;
+    startY = Math.random() * 20;
+    angle = 36 + Math.random() * 16; // 36 to 52 degrees
+  } else {
+    // Very rare opposite streak: left side down-right
+    startX = Math.random() * 10;
+    startY = 10 + Math.random() * 30;
+    angle = 40 + Math.random() * 14; // 40 to 54 degrees
+  }
+  
+  star.style.left = startX + '%';
+  star.style.top = startY + '%';
+  star.style.width = (100 + Math.random() * 150) + 'px';
+  
+  // Store per-star angle so keyframes keep diagonal direction
+  star.style.setProperty('--shoot-angle', `${angle}deg`);
+  
+  // Variable speed
+  const duration = 1.0 + Math.random() * 0.8; // 1.0-1.8s
+  star.style.animationDuration = duration + 's';
+  star.style.animationTimingFunction = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  
+  // Add variety - some colored shooting stars
+  const colorVariant = Math.random();
+  if(colorVariant < 0.15) {
+    // Golden shooting star
+    star.style.background = 'linear-gradient(90deg, rgba(253,230,138,1) 0%, rgba(253,230,138,0.9) 10%, rgba(253,230,138,0.3) 50%, rgba(253,230,138,0) 100%)';
+    star.style.boxShadow = '0 0 6px 2px rgba(253,230,138,0.6), 0 0 12px 3px rgba(253,230,138,0.3)';
+  } else if(colorVariant < 0.25) {
+    // Blue shooting star
+    star.style.background = 'linear-gradient(90deg, rgba(165,243,252,1) 0%, rgba(165,243,252,0.9) 10%, rgba(165,243,252,0.3) 50%, rgba(165,243,252,0) 100%)';
+    star.style.boxShadow = '0 0 6px 2px rgba(165,243,252,0.6), 0 0 12px 3px rgba(165,243,252,0.3)';
+  } else if(colorVariant < 0.35) {
+    // Pink shooting star
+    star.style.background = 'linear-gradient(90deg, rgba(249,197,224,1) 0%, rgba(249,197,224,0.9) 10%, rgba(249,197,224,0.3) 50%, rgba(249,197,224,0) 100%)';
+    star.style.boxShadow = '0 0 6px 2px rgba(249,197,224,0.6), 0 0 12px 3px rgba(249,197,224,0.3)';
+  }
+  
+  document.body.appendChild(star);
+  
+  // Trigger animation
+  requestAnimationFrame(() => {
+    star.style.animation = `shootingStar ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+  });
+  
+  // Remove after animation
+  setTimeout(() => star.remove(), duration * 1000 + 100);
+}
+
+// Trigger shooting stars randomly
+function scheduleShootingStar() {
+  const delay = isMobile ? (2500 + Math.random() * 4000) : (1500 + Math.random() * 3000);
+  setTimeout(() => {
+    if (isPageVisible) createShootingStar(); // Only create if tab is visible
+    scheduleShootingStar();
+  }, delay);
+}
+scheduleShootingStar();
+
+// Occasional multiple shooting stars
+setInterval(() => {
+  if (!isPageVisible) return; // Pause when tab hidden
+  if(Math.random() < 0.4) { // 40% chance
+    const count = isMobile ? 2 : 3;
+    for(let i=0; i<count; i++) {
+      setTimeout(() => createShootingStar(), i * 300);
+    }
+  }
+}, isMobile ? 15000 : 12000);
+
 /* ── BACKGROUND MUSIC ── */
 const music = document.getElementById('bgMusic');
 let musicStarted = false;
@@ -1107,6 +1357,10 @@ function startMainExperience() {
   if (mainStarted) return;
   mainStarted = true;
 
+  // Stop automatic burst sparkles when main experience starts
+  if (burstSparkleInterval) clearInterval(burstSparkleInterval);
+  if (strongBurstInterval) clearInterval(strongBurstInterval);
+
   typingBox.classList.remove('fade-out');
   typingBox.style.display = 'block';
   typeText.style.animation = 'none';
@@ -1181,7 +1435,8 @@ let debugHoldTimer = null;
 let teaseInProgress = false;
 let teaseTimers = []; // Track all tease-related timers for cleanup
 let yesLineIndex = 0; // Track YES sequence progress
-let notYetLineIndex = 0; // Track NOT YET sequence progress
+let notYetAttempts = 0; // Track NOT YET flee attempts
+let notYetIsFleeing = false;
 
 function createSparkles(x, y, count = 12) {
   for (let i = 0; i < count; i++) {
@@ -1232,27 +1487,17 @@ function runTease(singleLine, onComplete) {
   
   const teaseEl = document.createElement('div');
   teaseEl.className = 'pg-tease-line';
-  teaseEl.style.cssText = `
-    position: fixed;
-    top: 65%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(18px, 4.5vw, 26px);
-    color: rgba(232, 218, 255, 0.95);
-    line-height: 1.6;
-    max-width: 85vw;
-    z-index: 6100;
-    opacity: 0;
-    white-space: normal;
-    pointer-events: none;
-  `;
-  
-  // Add transition for fade in/out
-  teaseEl.style.transition = 'opacity 0.3s ease';
   teaseEl.textContent = singleLine;
-  document.body.appendChild(teaseEl);
+  teaseEl.style.opacity = '0';
+  teaseEl.style.transition = 'opacity 0.4s ease';
+  
+  // Append to button row for proper positioning
+  const btnRow = document.querySelector('.pg-btn-row');
+  if (btnRow) {
+    btnRow.appendChild(teaseEl);
+  } else {
+    document.body.appendChild(teaseEl);
+  }
   
   // Fade in
   const fadeInTimer = setTimeout(() => {
@@ -1268,9 +1513,9 @@ function runTease(singleLine, onComplete) {
       clearTeaseTimers();
       teaseInProgress = false;
       if (onComplete) onComplete();
-    }, 300);
+    }, 400);
     teaseTimers.push(cleanupTimer);
-  }, 1400);
+  }, 1800);
   teaseTimers.push(fadeOutTimer);
 }
 
@@ -1447,37 +1692,79 @@ function initPreEntryGate() {
     runTease(currentLine);
   });
 
-  pgNotYetBtn.addEventListener('click', () => {
-    // Guard: prevent click during running tease
-    if (teaseInProgress) return;
+  pgNotYetBtn.addEventListener('mouseenter', handleNotYetFlee);
+  pgNotYetBtn.addEventListener('touchstart', handleNotYetFlee, { passive: false });
+  
+  function handleNotYetFlee(e) {
+    if (notYetIsFleeing || gateState !== 'ready') return;
     
-    // Check if we've shown all NOT YET lines
-    if (notYetLineIndex >= teaseSequences.notYet.length) {
-      // All lines complete, transition to loading
-      pgYesBtn.disabled = true;
-      pgNotYetBtn.disabled = true;
-      pgYesBtn.style.opacity = '0.6';
-      pgNotYetBtn.style.opacity = '0.6';
-      
-      // Sparkle burst on transition
-      const rect = pgNotYetBtn.getBoundingClientRect();
-      createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 20);
-      
-      setTimeout(() => {
-        pgYesBtn.style.display = 'none';
-        pgNotYetBtn.style.display = 'none';
-      }, 300);
-      setTimeout(beginLoading, 500);
-      return;
+    e.preventDefault();
+    notYetAttempts++;
+    notYetIsFleeing = true;
+    
+    // Make button flee to random position within card bounds
+    const card = pgCard.getBoundingClientRect();
+    const btn = pgNotYetBtn.getBoundingClientRect();
+    
+    // Calculate safe bounds (within card, with padding)
+    const padding = 20;
+    const maxX = card.width - btn.width - padding * 2;
+    const maxY = card.height - btn.height - padding * 2;
+    
+    // Generate random position
+    const newX = Math.random() * maxX + padding;
+    const newY = Math.random() * maxY + padding;
+    
+    // Speed up animation based on attempts (faster = harder to catch!)
+    const speed = Math.max(0.1, 0.25 - notYetAttempts * 0.01); // Gets faster
+    pgNotYetBtn.style.transition = `all ${speed}s ease-out`;
+    
+    // Apply fleeing class and move
+    pgNotYetBtn.classList.add('fleeing');
+    pgNotYetBtn.style.position = 'absolute';
+    pgNotYetBtn.style.left = newX + 'px';
+    pgNotYetBtn.style.top = newY + 'px';
+    
+    // Show playful messages - gets cheekier with more attempts
+    const messages = [
+      "Too slow! 😏",
+      "Not so fast!",
+      "Can't catch me! 😜",
+      "Nope! Try again!",
+      "Keep trying! 😆",
+      "Still too slow!",
+      "You'll never get me!",
+      "Maybe try 'Yes'? 😉",
+      "I can do this all day!",
+      "Getting tired yet?",
+      "Just click 'Yes' already! 😂",
+      "This is fun, isn't it?",
+      "I'm serious about 'Yes'! 💁",
+      "The 'Yes' button doesn't run...",
+      "Still here? Click 'Yes'! 😉"
+    ];
+    
+    // Pick message: sequential for first round, then cycle through the cheeky hints
+    let messageIndex;
+    if (notYetAttempts <= messages.length) {
+      messageIndex = notYetAttempts - 1;
+    } else {
+      // After first round, randomly pick from the hint messages (last 7)
+      messageIndex = 7 + Math.floor(Math.random() * 8);
+    }
+    runTease(messages[messageIndex]);
+    
+    // After 5 attempts, highlight the Yes button
+    if (notYetAttempts >= 5 && !pgYesBtn.classList.contains('hint-glow')) {
+      pgYesBtn.classList.add('hint-glow');
     }
     
-    // Show next line of NOT YET sequence
-    const currentLine = teaseSequences.notYet[notYetLineIndex];
-    const isLastLine = notYetLineIndex === teaseSequences.notYet.length - 1;
-    notYetLineIndex++;
-    
-    runTease(currentLine);
-  });
+    // Reset fleeing state (based on animation speed)
+    setTimeout(() => {
+      pgNotYetBtn.classList.remove('fleeing');
+      notYetIsFleeing = false;
+    }, speed * 1000 + 50); // Wait for transition + buffer
+  }
 
   pgDdInput.addEventListener('input', () => {
     sanitizeCodeInput(pgDdInput);
@@ -1508,6 +1795,7 @@ initPreEntryGate();
 /* ── FLOATING HEARTS ── */
 const heartsContainer = document.getElementById('hearts-container');
 function createHeart() {
+  if (!isPageVisible) return; // Don't create hearts when tab is hidden
   const heart = document.createElement('div');
   heart.className = 'heart';
   heart.innerHTML = '❤️';
@@ -1674,27 +1962,100 @@ const COLS = ['#e8d0ff','#fde68a','#f9c5e0','#a5f3fc','#fff','#c8a0ff','#ffd6a5'
 function mkP(x,y,burst){
   const a = Math.random()*Math.PI*2;
   const sp = burst?(2+Math.random()*4):(0.05+Math.random()*0.15);
+  const isSpecial = !burst && Math.random() < 0.15; // 15% chance for brighter sparkle
   return {
     x:x??Math.random()*W, y:y??Math.random()*H,
-    r:burst?(1+Math.random()*2.5):(0.4+Math.random()*1.9),
+    r:burst?(1+Math.random()*2.5):isSpecial?(0.8+Math.random()*2.2):(0.4+Math.random()*1.9),
     c:COLS[0|Math.random()*COLS.length],
     a:burst?0.85:0, d:burst?0.03:(0.011+Math.random()*0.016),
-    ma:burst?0.9:(0.2+Math.random()*0.45),
+    ma:burst?0.9:isSpecial?(0.4+Math.random()*0.5):(0.2+Math.random()*0.45),
     vx:burst?Math.cos(a)*sp:(Math.random()-.5)*0.22,
     vy:burst?Math.sin(a)*sp-1:(-0.07-Math.random()*0.17),
-    l:burst?0:Math.random()*130, ml:burst?45:(90+Math.random()*130), burst
+    l:burst?0:Math.random()*130, ml:burst?45:(90+Math.random()*180), burst
   };
 }
 // Reduce particles on mobile for performance
 const particleCount = isMobile ? 60 : 160;
 for(let i=0;i<particleCount;i++) particles.push(mkP());
 
+// Track intervals for cleanup and pause/resume
+let ambientGlitterInterval = null;
+let burstSparkleInterval = null;
+let strongBurstInterval = null;
+let isPageVisible = true;
+
+// Page Visibility API to prevent build-up when tab is hidden
+document.addEventListener('visibilitychange', () => {
+  isPageVisible = !document.hidden;
+});
+
+// Only spawn ambient glitter (subtle floating particles)
+ambientGlitterInterval = setInterval(() => {
+  if (!isPageVisible) return; // Pause when tab hidden
+  const spawnCount = isMobile ? 2 : 3;
+  for(let i=0; i<spawnCount; i++) {
+    // Spawn from random edges or center areas
+    const edge = Math.random();
+    let x, y;
+    if (edge < 0.25) {
+      // Top edge
+      x = Math.random() * W;
+      y = -10;
+    } else if (edge < 0.5) {
+      // Random position in upper third
+      x = Math.random() * W;
+      y = Math.random() * (H * 0.4);
+    } else if (edge < 0.75) {
+      // Left or right edge
+      x = Math.random() < 0.5 ? -10 : W + 10;
+      y = Math.random() * H;
+    } else {
+      // Random center position
+      x = Math.random() * W;
+      y = Math.random() * H;
+    }
+    particles.push(mkP(x, y, false));
+  }
+}, isMobile ? 800 : 500);
+
+// Create magical burst sparkles at random positions (only during gate phase)
+burstSparkleInterval = setInterval(() => {
+  if (!isPageVisible || mainStarted) return; // Stop on main page or when tab hidden
+  // Create multiple burst locations simultaneously
+  const burstLocations = isMobile ? 2 : 3;
+  
+  for(let loc=0; loc<burstLocations; loc++) {
+    // Random position on screen for each burst
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const burstCount = isMobile ? 4 : 6;
+    
+    // Create burst particles (similar to mouse hover)
+    for(let i=0; i<burstCount; i++) {
+      particles.push(mkP(x + (Math.random()-.5)*18, y + (Math.random()-.5)*18, true));
+    }
+  }
+}, isMobile ? 1200 : 800);
+
+// Additional sparkle bursts for even more magic (only during gate phase)
+strongBurstInterval = setInterval(() => {
+  if (!isPageVisible || mainStarted) return; // Stop on main page or when tab hidden
+  // Single strong burst
+  const x = Math.random() * W;
+  const y = Math.random() * H;
+  const burstCount = isMobile ? 5 : 8;
+  
+  for(let i=0; i<burstCount; i++) {
+    particles.push(mkP(x + (Math.random()-.5)*22, y + (Math.random()-.5)*22, true));
+  }
+}, isMobile ? 2000 : 1500);
+
 let lastB=0;
 if (!isMobile) {
   document.addEventListener('mousemove',e=>{
     const now=Date.now();
-    if(now-lastB>100){ lastB=now;
-      for(let i=0;i<4;i++) particles.push(mkP(e.clientX+(Math.random()-.5)*12,e.clientY+(Math.random()-.5)*12,true));
+    if(now-lastB>80){ lastB=now;
+      for(let i=0;i<6;i++) particles.push(mkP(e.clientX+(Math.random()-.5)*15,e.clientY+(Math.random()-.5)*15,true));
     }
   });
 }
@@ -1703,18 +2064,18 @@ let lastClick = 0;
 document.addEventListener('click',e=>{
   const now = Date.now();
   const isRapidClick = (now - lastClick) < 300;
-  const particleCount = isRapidClick ? 15 : 10; // More sparkles for rapid clicks!
+  const particleCount = isRapidClick ? 20 : 12; // More sparkles for rapid clicks!
   
   for(let j=0;j<particleCount;j++) {
-    particles.push(mkP(e.clientX + (Math.random()-0.5)*20, e.clientY + (Math.random()-0.5)*20, true));
+    particles.push(mkP(e.clientX + (Math.random()-0.5)*25, e.clientY + (Math.random()-0.5)*25, true));
   }
   lastClick = now;
 });
 
 document.addEventListener('touchstart',e=>{
   if(e.touches[0]) {
-    for(let j=0;j<12;j++) {
-      particles.push(mkP(e.touches[0].clientX + (Math.random()-0.5)*20, e.touches[0].clientY + (Math.random()-0.5)*20, true));
+    for(let j=0;j<15;j++) {
+      particles.push(mkP(e.touches[0].clientX + (Math.random()-0.5)*25, e.touches[0].clientY + (Math.random()-0.5)*25, true));
     }
   }
 });
@@ -1726,17 +2087,21 @@ function star(x,y,r,a,c){
 }
 
 function loop(){
-  ctx.clearRect(0,0,W,H);
-  particles = particles.filter(p=>!(p.burst&&p.l>=p.ml));
-  particles.forEach((p,i)=>{
-    p.l++;p.x+=p.vx;p.y+=p.vy;
-    if(p.burst){p.vx*=0.93;p.vy*=0.93;p.vy+=0.05;p.a=Math.max(0,p.ma*(1-p.l/p.ml));}
-    else{ if(p.l<p.ml*.3) p.a=Math.min(p.a+p.d,p.ma); else p.a=Math.max(p.a-p.d*.5,0); }
-    if(p.r>1) star(p.x,p.y,p.r,p.a,p.c);
-    else{ ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=5;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.restore(); }
-    if(!p.burst&&(p.l>=p.ml||p.y<-10)) particles[i]=mkP();
-  });
-  while(particles.length>300) particles.shift();
+  if (isPageVisible) { // Only render when tab is visible
+    ctx.clearRect(0,0,W,H);
+    particles = particles.filter(p=>!(p.burst&&p.l>=p.ml));
+    particles.forEach((p,i)=>{
+      p.l++;p.x+=p.vx;p.y+=p.vy;
+      if(p.burst){p.vx*=0.93;p.vy*=0.93;p.vy+=0.05;p.a=Math.max(0,p.ma*(1-p.l/p.ml));}
+      else{ if(p.l<p.ml*.3) p.a=Math.min(p.a+p.d,p.ma); else p.a=Math.max(p.a-p.d*.5,0); }
+      if(p.r>1) star(p.x,p.y,p.r,p.a,p.c);
+      else{ ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=5;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.restore(); }
+      if(!p.burst&&(p.l>=p.ml||p.y<-10)) particles[i]=mkP();
+    });
+    // Allow more particles for continuous magical effect, but with limits
+    const maxParticles = isMobile ? 350 : 600;
+    while(particles.length>maxParticles) particles.shift();
+  }
   requestAnimationFrame(loop);
 }
 loop();
