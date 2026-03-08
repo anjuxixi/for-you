@@ -814,10 +814,9 @@ body.gate-locked {
 }
 .pg-tease-line {
   position: absolute;
-  top: 100%;
-  margin-top: 18px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 100;
   font-family: 'Playfair Display', serif;
   font-size: clamp(13px, 3.2vw, 16px);
@@ -983,14 +982,21 @@ body.gate-locked {
   .msg p { margin-bottom:10px; }
   .tag { padding:9px 16px; min-height:32px; font-size:6px; } /* Even larger for phones */
   .typing-container { padding:25px 30px; }
-  .pg-card { width: 94vw; padding: 22px 16px; }
+  .pg-card { width: 94vw; padding: 22px 16px 115px 16px; }
   .pg-btn { min-height: 44px; padding: 11px 16px; }
   .pg-code-input { width: 66px; height: 54px; font-size: 24px; }
+  .pg-btn-row {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
   .pg-tease-line {
     font-size: clamp(12px, 3.5vw, 14px);
-    margin-top: 15px;
     white-space: normal;
-    max-width: 95%;
+    max-width: 92%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   /* Reduce animation intensity on mobile */
   .heart { animation-duration: 5s !important; }
@@ -1495,6 +1501,25 @@ function runTease(singleLine, onComplete) {
   const btnRow = document.querySelector('.pg-btn-row');
   if (btnRow) {
     btnRow.appendChild(teaseEl);
+
+    const positionTease = () => {
+      const cardEl = document.getElementById('pgCard');
+      const yesBtn = document.getElementById('pgYesBtn');
+      if (!cardEl || !yesBtn) return;
+
+      const cardRect = cardEl.getBoundingClientRect();
+      const yesRect = yesBtn.getBoundingClientRect();
+      const rowRect = btnRow.getBoundingClientRect();
+
+      // Center the tease in the gap between YES button bottom and card bottom.
+      const gapCenterY = yesRect.bottom + ((cardRect.bottom - yesRect.bottom) / 2);
+      const topWithinRow = gapCenterY - rowRect.top;
+
+      teaseEl.style.top = `${topWithinRow}px`;
+      teaseEl.style.transform = 'translate(-50%, -50%)';
+    };
+
+    requestAnimationFrame(positionTease);
   } else {
     document.body.appendChild(teaseEl);
   }
